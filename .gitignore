@@ -416,3 +416,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Production.json
+secrets.json

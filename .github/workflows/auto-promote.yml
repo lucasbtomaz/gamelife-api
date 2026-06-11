@@ -1,0 +1,84 @@
+name: Auto Promote
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - development
+      - 'release-**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  development-to-release:
+    if: github.event.pull_request.merged == true && github.base_ref == 'development'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calcula proximo numero de release
+        id: version
+        run: |
+          git fetch origin 'refs/heads/release-*:refs/remotes/origin/release-*'
+
+          LAST=$(git branch -r | grep -oE 'release-v1\.0\.[0-9]+' | grep -oE '[0-9]+$' | sort -n | tail -1)
+
+          if [ -z "$LAST" ]; then
+            NEXT=1
+          else
+            NEXT=$((LAST + 1))
+          fi
+
+          echo "branch_name=release-v1.0.${NEXT}" >> "$GITHUB_OUTPUT"
+
+      - name: Cria branch de release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout development
+          git pull origin development
+          git checkout -b "${{ steps.version.outputs.branch_name }}"
+          git push origin "${{ steps.version.outputs.branch_name }}"
+
+      - name: Abre PR development -> release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base "${{ steps.version.outputs.branch_name }}" \
+            --head development \
+            --title "release: ${{ steps.version.outputs.branch_name }}" \
+            --body "PR automática de promoção: development -> ${{ steps.version.outputs.branch_name }}. Aguardando testes + análise Sonar."
+
+  release-to-main:
+    if: github.event.pull_request.merged == true && startsWith(github.base_ref, 'release-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Abre PR release -> main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ github.base_ref }}"
+
+          EXISTING=$(gh pr list --base main --head "$BRANCH" --state open --json number --jq length)
+
+          if [ "$EXISTING" -eq 0 ]; then
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Production release: $BRANCH" \
+              --body "PR automática de promoção: $BRANCH -> main."
+          else
+            echo "PR já existe para $BRANCH -> main, nada a fazer."
+          fi

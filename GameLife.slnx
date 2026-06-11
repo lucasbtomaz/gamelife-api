@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/GameLife.Api.Tests/GameLife.Api.Tests.csproj" />
+  </Folder>
+  <Project Path="GameLife.Api/GameLife.Api.csproj" />
+</Solution>
