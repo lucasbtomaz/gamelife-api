@@ -21,10 +21,3 @@ feature/xxx → PR → development → PR → release → PR → main
 **Coleção de Jogos:** Adição, edição e remoção de jogos.
 **Detalhes de Progresso:** Registro de tempo de jogo, conquistas, notas e data de finalização.
 **Monitoramento de Preços:** Acompanhamento de preços de jogos em diferentes plataformas.
-
-## Tecnologias e Boas Práticas
-**Backend:** ASP.NET 10 Web API
-**Banco de Dados:** Entity Framework Core com SQLite
-**Padrões de Projeto:** Repository Pattern
-**Princípios:** SOLID
-**CI/CD:** GitHub Actions
