@@ -1,6 +1,10 @@
 <Solution>
   <Folder Name="/Tests/">
-    <Project Path="Tests/GameLife.Api.Tests/GameLife.Api.Tests.csproj" />
+    <Project Path="Tests/GameLife.Tests.Integration/GameLife.Tests.Integration.csproj" />
+    <Project Path="Tests/GameLife.Tests.Unit/GameLife.Tests.Unit.csproj" />
   </Folder>
   <Project Path="GameLife.Api/GameLife.Api.csproj" />
+  <Project Path="GameLife.Application/GameLife.Application.csproj" />
+  <Project Path="GameLife.Domain/GameLife.Domain.csproj" />
+  <Project Path="GameLife.Infrastructure/GameLife.Infrastructure.csproj" />
 </Solution>
