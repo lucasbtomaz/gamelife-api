@@ -1,23 +1,87 @@
-# GameLife 
-O Gerenciador de jogos para substituir as planilhas por um sistema moderno e robusto para gerenciar coleção de jogos e conquistas.
+# GameLife
 
-## Sobre o projeto
-O GameLife é um projeto pessoal de backend, desenvolvido em .NET 10, com o objetivo de aprofundar seus conhecimentos em Programação Orientada a Objetos (POO), princípios SOLID e design patterns. 
-Este documento serve como um guia para o desenvolvimento, especificando as regras de negócio, a arquitetura do sistema e o plano de implementação. 
-O projeto será usado como portfólio, por isso, as boas práticas de CI/CD e a organização do repositório também são abordadas.
+API para organizar a biblioteca, o backlog e as ofertas de jogos, substituindo o controle feito em planilhas.
 
-## Estrutura de branches
+## Estado atual
 
-main         → produção (protegida)
-release       → pré-produção/homologação (protegida)
-development   → integração contínua (protegida, mas menos restrita)
-feature/*     → branches de trabalho (a partir de development)
+O projeto está na fase de prova de conceito da importação do backlog. A primeira hipótese é validar se o sistema consegue identificar jogos repetidos ou já possuídos antes de uma nova compra.
 
-## Fluxo
+O escopo, as regras de negócio e os critérios de sucesso estão descritos em [POC: importação e revisão do backlog](poc-backlog.md).
 
-feature/xxx → PR → development → PR → release → PR → main
+## Tecnologias
 
-## Funcionalidades
-**Coleção de Jogos:** Adição, edição e remoção de jogos.
-**Detalhes de Progresso:** Registro de tempo de jogo, conquistas, notas e data de finalização.
-**Monitoramento de Preços:** Acompanhamento de preços de jogos em diferentes plataformas.
+- .NET 10;
+- ASP.NET Core;
+- xUnit;
+- GitHub Actions;
+- SQL Server planejado para a etapa de persistência.
+
+## Arquitetura
+
+A POC utiliza um monólito modular organizado nos seguintes projetos:
+
+| Projeto | Responsabilidade |
+|---|---|
+| `GameLife.Api` | Endpoints HTTP e composição da aplicação. |
+| `GameLife.Application` | Casos de uso e coordenação do domínio. |
+| `GameLife.Domain` | Entidades, objetos de valor e regras de negócio. |
+| `GameLife.Infrastructure` | Persistência e integrações externas. |
+| `GameLife.Tests.Unit` | Testes unitários do domínio e da aplicação. |
+| `GameLife.Tests.Integration` | Testes de integração da API. |
+
+As dependências seguem em direção ao domínio:
+
+```text
+API -> Application -> Domain
+  |          ^
+  +-> Infrastructure
+
+Unit Tests -> Application/Domain
+Integration Tests -> API
+```
+
+Microserviços, mensageria, inteligência artificial e a interface React definitiva estão fora do escopo desta POC.
+
+## Idioma do código
+
+Os nomes das classes, métodos, propriedades, testes e regras de domínio são escritos em português. Nomes próprios de tecnologias e o nome do produto `GameLife` são mantidos no idioma original.
+
+## Executar localmente
+
+É necessário ter o SDK do .NET 10 instalado.
+
+```powershell
+dotnet restore GameLife.slnx
+dotnet build GameLife.slnx --configuration Release --no-restore
+dotnet test GameLife.slnx --configuration Release --no-build
+```
+
+Para executar a API:
+
+```powershell
+dotnet run --project GameLife.Api
+```
+
+## Fluxo de branches
+
+- `main`: versão estável;
+- `development`: integração das funcionalidades;
+- `feature/*`: desenvolvimento isolado, criado a partir de `development`.
+
+O fluxo de promoção é manual:
+
+```text
+feature/* -> pull request -> development -> pull request -> main
+```
+
+As versões publicadas em `main` são identificadas por tags no formato `vX.Y.Z`. Não são criadas branches automáticas de release.
+
+## Integração contínua
+
+O GitHub Actions executa restauração, compilação e testes:
+
+- em pull requests destinados a `development` ou `main`;
+- em envios para `main`, `development`, `feature/*` e para o padrão legado `feature-*`;
+- manualmente pela interface do GitHub.
+
+Uma alteração só deve ser integrada quando o workflow `Validação contínua` estiver aprovado.
