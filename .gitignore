@@ -425,3 +425,6 @@ appsettings.Production.json
 secrets.json
 
 /bin
+
+# Documentação local de planejamento
+/docs-local/

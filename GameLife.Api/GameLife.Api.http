@@ -1,6 +1,23 @@
-@GameLife.Api_HostAddress = http://localhost:5129
+@GameLife_Host = http://localhost:5129
 
-GET {{GameLife.Api_HostAddress}}/weatherforecast/
+### Listar a biblioteca
+GET {{GameLife_Host}}/biblioteca
 Accept: application/json
 
-###
+### Adicionar um jogo à biblioteca
+POST {{GameLife_Host}}/biblioteca
+Content-Type: application/json
+
+{
+  "titulo": "Hades",
+  "plataforma": "PC"
+}
+
+### Adicionar outro jogo
+POST {{GameLife_Host}}/biblioteca
+Content-Type: application/json
+
+{
+  "titulo": "Pokémon: Let's Go!",
+  "plataforma": "Nintendo Switch"
+}

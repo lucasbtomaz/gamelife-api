@@ -62,6 +62,37 @@ Para executar a API:
 dotnet run --project GameLife.Api
 ```
 
+## Banco de dados
+
+A persistência usa Entity Framework Core com SQL Server. A conexão local padrão aponta para a instância SQL Server Express `SQLEXPRESS` e pode ser substituída pela configuração `ConnectionStrings__GameLife`.
+
+> `Encrypt=False` é usado apenas no ambiente local. Ambientes publicados devem configurar uma conexão segura por variável de ambiente.
+
+Restaure a ferramenta local e aplique as migrations com:
+
+```powershell
+dotnet tool restore
+dotnet tool run dotnet-ef database update --project GameLife.Infrastructure --startup-project GameLife.Api
+```
+
+## Biblioteca
+
+Os primeiros endpoints disponíveis são:
+
+```http
+POST /biblioteca
+GET /biblioteca
+```
+
+Exemplo de inclusão:
+
+```json
+{
+  "titulo": "Hades",
+  "plataforma": "PC"
+}
+```
+
 ## Fluxo de branches
 
 - `main`: versão estável;
